@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="init_variables" doc:id="52b53121-3973-476d-b8ee-6c88d335a7e5" >
+		<ee:transform doc:name="attributes_original" doc:id="152079ea-005b-4d3c-beca-d22e86cb3327" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="attributes_original" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="ref_date" doc:id="5ae4e8c7-583b-4bc6-9ea6-b5612b355bd9" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ref_date" ><![CDATA[%dw 2.0
+output application/java
+---
+now() >> "UTC"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="response_header" doc:id="3175033d-ded5-4907-8daa-5ef23d51d41e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="response_header" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "api_name": app.name,
+    "api_version": p("api_version"),
+    "correlation_id": correlationId,
+    "ref_date" : vars.ref_date
+    
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="response_data" doc:id="334e41dd-2540-4289-b3ba-6678d1e48fdd" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="response_data" ><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="response_error" doc:id="1a7805ce-0827-45a5-b288-7c5cf876f2c2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="response_error" ><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="flow_start_ts" doc:id="46f07aa0-164a-45e9-9ec6-07d1d420adef" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="flow_start_ts" ><![CDATA[%dw 2.0
+import * from dw::util::Timer
+output application/java
+---
+currentMilliseconds() as Number]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="metric_http" doc:id="06aa9db8-2391-45d3-bce2-0659c57b7d5d" >
+		<logger level="INFO" doc:name="metric_http" doc:id="da82eaab-bba4-48b6-8977-467d99fea8d1" message='#[%dw 2.0
+import * from dw::util::Timer
+output application/json
+---
+{
+	correlationId: correlationId,
+	appName: app.name,
+	version: p("api_version"),
+	remoteAddress: vars.attributes_original.remoteAddress,
+	requestUri: vars.attributes_original.requestUri,
+	requestMethod: vars.attributes_original.method,
+	clientId: vars.attributes_original.headers.client_id,
+	httpStatus: vars.httpStatus,
+	responseTime: ( currentMilliseconds() as Number ) - ( vars.flow_start_ts as Number )
+}]'/>
+	</flow>
+	<flow name="log_management" doc:id="8662644a-e9ca-4bcc-98b2-4a9fe5242bf4" >
+		<choice doc:name="Choice" doc:id="76bef820-7a39-449a-94f1-26cbfb9c6c5d" >
+			<when expression='#[vars.LOG_LEVEL == "DEBUG"]'>
+				<logger level="DEBUG" doc:name="DEBUG" doc:id="2a0a6c29-464c-4e14-9a8b-7a135c1664bb" message="#[vars.LOG_MESSAGE]" category="com.smcp.logging"/>
+			</when>
+			<when expression='#[vars.LOG_LEVEL == "INFO"]'>
+				<logger level="INFO" doc:name="INFO" doc:id="5657ad01-59fa-495a-aa5b-68262d3ee328" message="#[vars.LOG_MESSAGE]"/>
+			</when>
+			<when expression='#[vars.LOG_LEVEL == "WARN"]'>
+				<logger level="WARN" doc:name="WARN" doc:id="2799a34c-f91d-47bf-ab6a-b7936990935e" message="#[vars.LOG_MESSAGE]"/>
+			</when>
+			<when expression='#[vars.LOG_LEVEL == "ERROR"]'>
+				<logger level="ERROR" doc:name="ERROR" doc:id="170e90b1-b942-4bd0-afec-552235eeb6e5" message="#[vars.LOG_MESSAGE]"/>
+			</when>
+			<when expression='#[vars.LOG_LEVEL == "TRACE"]'>
+				<logger level="TRACE" doc:name="TRACE" doc:id="d1b6b6b9-b5fe-4214-8af4-b7282677f928" message="#[vars.LOG_MESSAGE]"/>
+			</when>
+			<otherwise >
+				<logger level="WARN" doc:name="WARN" doc:id="e310b1d2-0e9c-4298-a0b7-bbf59dc6a6e1" message="#[vars.LOG_MESSAGE]" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

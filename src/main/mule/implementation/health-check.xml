@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get:\health-check:imp" doc:id="ef3ab189-b995-4a3d-94e9-b07f9201b021" >
+		<async doc:name="Async" doc:id="8e207ee5-fbac-442b-ab30-9145cccceb6e">
+			<ee:transform doc:name="LOG  VARS" doc:id="2876b5aa-139d-4fcc-9575-a34685263d18">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="LOG_MESSAGE"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	flowName: "get:\health-check:imp",
+	correlationId: correlationId,
+	category: "REGULAR", //REGULAR SECURITY SYSTEM METRIC
+	key: "health-check-status",
+	value: "OK"
+}
+]]></ee:set-variable>
+					<ee:set-variable variableName="LOG_LEVEL"><![CDATA[//DEBUG ERROR INFO TRACE WARN
+"INFO"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="AUDIT LOG" doc:id="802903c7-74ce-4c6a-b5b6-e5e2e7121dc4" name="log_management" target="LOGSINK" />
+		</async>
+		<ee:transform doc:name="response_data" doc:id="1ca5cf94-e2ec-4619-84e7-b81bb6561e65">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="response_data" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	api_status: "OK"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>

@@ -4,36 +4,46 @@ title: API Specification Template
 
 description: This is a template project for a System API which should be used each time a new System API is to be created 
 
+
+types:
+  Response:
+    properties:
+      header:
+        type: object
+        properties:
+          apiName: 
+            type: string
+            example: "template-api"
+          apiVersion: 
+            type: string
+            example: "1.0"
+          correlationID: 
+            type: string
+            example: "ab7cdcd7-b71a-4554-87e8-61bdea42ab28"
+      data:
+        type: object|array
+      error:
+        type: object|array
+        example:
+          properties:
+            type: "OBJECT:NOT_FOUND"
+            message: "object abc@xyz.com not found"
+
+
 /template:
   get:
     responses:
       200:
         body:
-          application/json:
-            properties:
-              success: boolean
-              message: string
-            examples:
-              helloWorldExample:
-                success: true
-                message: "Hello World!"
-
-/status:
+          application/json: 
+            type: Response
+            
+/health-check:
   get:
     responses:
       200:
         body:
            application/json:
-             properties:
-              success: boolean
-              apiName: string
-              version: string
-              timestamp: datetime
-             examples:
-               statusExample:
-                success: true
-                apiName: "test-template-api"
-                version: "1.0.0"
-                timestamp: "2020-07-12T09:35:39.406+02:00"
+              type: Response
 
             

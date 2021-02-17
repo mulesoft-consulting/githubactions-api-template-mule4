@@ -121,14 +121,14 @@ fi
 
 #ANYPOINT HOST
 if [ "$#" -gt 4 ]; then
-    ANYPOINT_HOST="$6"
+    ANYPOINT_HOST="$5"
 else
     ANYPOINT_HOST="anypoint.mulesoft.com"
 fi
 
 #REGION
 if [ "$#" -gt 5 ]; then
-    REGION="$7"
+    REGION="$6"
 else
     REGION="us-east-1"
 fi

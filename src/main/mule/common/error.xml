@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="Global_Error_Handler" doc:id="bc1a20f9-5c9f-4445-a3d7-3cb848666853" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9b50f14c-33d2-479d-a54e-3d8c71ae4457" type="APIKIT:NOT_FOUND">
+			<ee:transform doc:name="response_error" doc:id="327f0d5b-190e-40bf-b97e-bfe6ad92c618" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					<ee:set-variable variableName="response_error" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"type": error.errorType.namespace ++ ":" ++ error.errorType.identifier,
+	"message": "unkown endpoint"
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7f6ae66d-2a8e-47bb-9c4d-8a5f0300dcbe" type="APIKIT:METHOD_NOT_ALLOWED">
+			<ee:transform doc:name="response_error" doc:id="353440fe-c2bd-49ec-b40c-514580dc1d55" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					<ee:set-variable variableName="response_error" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"type": error.errorType.namespace ++ ":" ++ error.errorType.identifier,
+	"message": "unsupported method"
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8a501447-e251-43e9-8ff1-c07af86aba37">
+			<ee:transform doc:name="response_erreur" doc:id="845ec230-68f7-4d09-b586-00f6aad9976b" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+					<ee:set-variable variableName="response_error" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"type": error.errorType.namespace ++ ":" ++ error.errorType.identifier,
+	"message": error.description
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>
