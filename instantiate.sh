@@ -6,7 +6,6 @@
 #           07ac71-97cb-46c0-ad91-105eb78e8 \
 #           myBusinessGroupName \
 #           git@github:user/repository.git \  
-#           maven-settings-id \
 #           eu1.anypoint.mulesoft.com \
 #           eu-central-1 
 
@@ -36,14 +35,13 @@ set -u
 
 print_help () {
     echo
-    echo "Usage: ./instantiate.sh [api-name] [group-id] [group-name] [api-repo-url] [maven-settings-id] [anypoint-host] [region]"
+    echo "Usage: ./instantiate.sh [api-name] [group-id] [group-name] [api-repo-url] [anypoint-host] [region]"
     echo
     echo "Options:"
     echo "api-name (required): the name of the project"
     echo "group-id: the business group id."
     echo "group-name: the business group name."
     echo "api-repo-url: the url to the repo. default empty"
-    echo "maven-settings-id: the id of the maven global settings that will be used in the jenkins pipeline. default -> maven-global-settings"
     echo "anypoint-host: the anypoint host. default -> anypoint.mulesoft.com"
     echo "region: the cloudhub region. default -> us-east-1"
     echo
@@ -121,22 +119,15 @@ else
     REPO_URL=""
 fi
 
-#MAVEN GLOBAL SETTINGS ID
-if [ "$#" -gt 4 ]; then
-    MVN_GLBL_SETT_ID="$5"
-else
-    MVN_GLBL_SETT_ID="maven-global-settings"
-fi
-
 #ANYPOINT HOST
-if [ "$#" -gt 5 ]; then
+if [ "$#" -gt 4 ]; then
     ANYPOINT_HOST="$6"
 else
     ANYPOINT_HOST="anypoint.mulesoft.com"
 fi
 
 #REGION
-if [ "$#" -gt 6 ]; then
+if [ "$#" -gt 5 ]; then
     REGION="$7"
 else
     REGION="us-east-1"
@@ -248,18 +239,6 @@ else
     fi
     printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 fi
-
-echo;echo "############### MAVEN GLOBAL SETTINGS ID"
-echo "* Using maven global settings id: $MVN_GLBL_SETT_ID"
-echo -n "* Updating id in jenkinsfile file... "
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s/{{MVN_GLBL_SETT_ID}}/$MVN_GLBL_SETT_ID/g" Jenkinsfile
-else
-    sed -i "s/{{MVN_GLBL_SETT_ID}}/$MVN_GLBL_SETT_ID/g" Jenkinsfile
-fi
-
-printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
-
 
 echo;echo "############### GIT CONFIGURATION"
 echo "* Initializing git..."
