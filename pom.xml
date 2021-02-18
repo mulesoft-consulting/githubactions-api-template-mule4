@@ -33,6 +33,9 @@
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
 				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/*.p12</exclude>
+				</excludes>
 			</resource>
 		</resources>
 		<finalName>${project.artifactId}-${project.version}</finalName>
