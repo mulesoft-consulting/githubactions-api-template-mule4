@@ -36,7 +36,7 @@ output application/json
         <apikit:router config-ref="APIkit-Router" />
     </flow>
     <flow name="flow-main">
-        <http:listener config-ref="httpListenerConfig" path="/*">
+        <http:listener config-ref="httpListenerConfig" path="/${app.name}/${api_version}/*">
             <non-repeatable-stream />
 			<http:response statusCode="#[vars.httpStatus default 200]">
                 <http:body><![CDATA[#[%dw 2.0
