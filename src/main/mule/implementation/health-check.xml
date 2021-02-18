@@ -34,7 +34,7 @@ output application/json
 output application/json
 ---
 {
-	api_status: "OK"
+	status: "OK"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
