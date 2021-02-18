@@ -265,7 +265,7 @@ else
     fi
     printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
     echo -n "** Updating git remote url... "
-    git remote set-url origin "$REPO_URL"
+    git remote add origin "$REPO_URL"
     printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 fi
 
