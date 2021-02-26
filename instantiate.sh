@@ -70,7 +70,7 @@ print_group_name_missing () {
     echo
     echo " ______________________________________________________________________________________________________"
     echo "| !! Group Name manual configuration !!                                                                |"
-    echo "| * Don't forget to update the ANYPOINT_BUSINESS_GROUP variable in your Jenkinsfile file               |"
+    echo "| * Don't forget to update the ANYPOINT_BUSINESS_GROUP variable in your pipeline file                  |"
     echo "|______________________________________________________________________________________________________|"
     echo
 }
@@ -194,23 +194,23 @@ printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
 echo;echo "############### ANYPOINT HOST UPDATE"
 echo "* Using host: $ANYPOINT_HOST"
-echo -n "* Updating host in pom and jenkinsfile files... "
+echo -n "* Updating host in pom and pipeline files... "
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" pom.xml
-    sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" Jenkinsfile
+    sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflow/pipeline.yml
 else 
     sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" pom.xml
-    sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" Jenkinsfile
+    sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflow/pipeline.yml
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
 echo;echo "############### ANYPOINT REGION UPDATE"
 echo "* Using region: $REGION"
-echo -n "* Updating region in jenkinsfile file... "
+echo -n "* Updating region in pipeline file... "
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s/{{REGION}}/$REGION/g" Jenkinsfile
+    sed -i '' "s/{{REGION}}/$REGION/g" .github/workflow/pipeline.yml
 else
-    sed -i "s/{{REGION}}/$REGION/g" Jenkinsfile
+    sed -i "s/{{REGION}}/$REGION/g" .github/workflow/pipeline.yml
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
@@ -233,9 +233,9 @@ if [ -z "$GROUP_NAME" ]; then
 else
     echo -n "* Updating Group Name... "
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s/{{GROUP_NAME}}/$GROUP_NAME/g" Jenkinsfile
+        sed -i '' "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflow/pipeline.yml
     else
-        sed -i "s/{{GROUP_NAME}}/$GROUP_NAME/g" Jenkinsfile
+        sed -i "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflow/pipeline.yml
     fi
     printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 fi
