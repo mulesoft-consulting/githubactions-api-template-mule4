@@ -1,2 +1,11 @@
 http:
   port: "8081"
+  
+https:
+  port: "8082"
+  private:
+    port: "8092"
+  
+logger:
+  fields_mask: "client_id"
+  disabled_fields: ""

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
-	xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:cassandra-db="http://www.mulesoft.org/schema/mule/cassandra-db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:cassandra-db="http://www.mulesoft.org/schema/mule/cassandra-db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
 http://www.mulesoft.org/schema/mule/cassandra-db http://www.mulesoft.org/schema/mule/cassandra-db/current/mule-cassandra-db.xsd
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
-http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
     
 	<configuration-properties doc:name="Configuration properties" doc:id="b4422718-3fb5-4c0e-b3cc-2e9874d75cc5" file="${mule.env}/properties/properties.yaml" />
 	<global-property doc:name="Global Property" doc:id="44d8a93b-0d39-495f-bace-07f762d8e98e" name="mule.env" value="LOCAL" />
@@ -11,4 +12,5 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="776a2f1e-f34e-432a-90c9-6859987e90bf" file="${mule.env}/properties/properties-secure.yaml" key="${mule.secure.key}" />
 	<global-property doc:name="Global Property" doc:id="f0f5199e-623f-4fc2-be65-4e314aebcbc4" name="mule.secure.key" value="0123456789012345" />
 	<global-property doc:name="Global Property" doc:id="7d3ca192-e9c4-45e5-97de-b8ac2148a3c3" name="api_version" value="1.0" />
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="b82edcbe-6a79-4e1b-a370-621a1cad6031" environment="${mule.env}" disabledFields="${logger.disabled_fields}" contentFieldsDataMasking="${logger.masked_fields}" applicationName="${app.name}" applicationVersion="${api_version}"/>
 </mule>
