@@ -79,7 +79,6 @@ jobs:
         run: |
           export TOKEN=`curl -s "$ANYPOINT_HOST/accounts/api/v2/oauth2/token" -X POST -H 'Content-Type: application/json' -d "{\"grant_type\": \"client_credentials\", \"client_id\": \"$ANYPOINT_APP_CLIENT_ID\", \"client_secret\": \"$ANYPOINT_APP_CLIENT_SECRET\"}"|sed -n 's|.*"access_token":"\([^\"]*\)".*|\1|p'|xargs`
           echo "export ACCESS_TOKEN=$TOKEN" > ~/.bashrc
-          echo $TOKEN
 
       - name: Preparing Maven Settings
         uses: whelk-io/maven-settings-xml-action@v14
