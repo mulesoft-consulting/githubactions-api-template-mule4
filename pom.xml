@@ -77,7 +77,7 @@
 						<uri>${anypoint.base_uri}</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<authToken>${authToken}</authToken>
-						<applicationName>${project.artifactId}-v1-${anypoint.environment}</applicationName>
+						<applicationName>${project.artifactId}-${project.name.suffix}</applicationName>
 						<businessGroup>${anypoint.businessgroup}</businessGroup>
 						<workers>${anypoint.workers}</workers>
 						<workerType>${anypoint.workertype}</workerType>
@@ -231,6 +231,12 @@
 			<id>anypoint-exchange-v2</id>
 			<name>Anypoint Exchange</name>
 			<url>https://maven.{{ANYPOINT_HOST}}/api/v2/organizations/${project.groupId}/maven</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>anypoint-exchange</id>
+			<name>Anypoint Exchange</name>
+			<url>https://maven.{{ANYPOINT_HOST}}/api/v1/maven</url>
 			<layout>default</layout>
 		</repository>
 		<repository>
