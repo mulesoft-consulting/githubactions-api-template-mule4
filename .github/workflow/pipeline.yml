@@ -39,6 +39,13 @@ jobs:
         with:
           java-version: 1.8
       
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      
       - id: branch_name
         name: Extract Branch Name
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -48,12 +55,17 @@ jobs:
         with:
           string: ${{ steps.branch_name.outputs.branch }}
 
+      - name: Initialize bashrc file 
+        run: |
+          > ~/.bashrc
+
       # DEV branch specific configuration
       - if: github.ref == 'refs/heads/dev'
         name: Environment DEV configuration
         run: |
           echo 'export ENV="DEV"' > ~/.bashrc
           echo 'export ANYPOINT_ENV="Development"' > ~/.bashrc
+          echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
       
       # QA branch specific configuration 
       - if: github.ref == 'refs/heads/qa'
@@ -61,6 +73,7 @@ jobs:
         run: |
           echo 'export ENV="QA"' > ~/.bashrc
           echo 'export ANYPOINT_ENV="Quality"' > ~/.bashrc
+          echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
         
       - name: Get Anypoint Access Token
         run: |
@@ -69,18 +82,18 @@ jobs:
           echo $TOKEN
 
       - name: Preparing Maven Settings
-        uses: s4u/maven-settings-action@v2.3.0
+        uses: whelk-io/maven-settings-xml-action@v14
         with:
-          servers: |
+          servers: | 
             [
-              {"id": "anypoint-exchange-v2", "username": "~~~Token~~~", "password": "${env.ACCESS_TOKEN}"},
-              {"id": "mule-ee-nexus-releases", "username": "$NEXUS_EE_USERNAME", "password": "$NEXUS_EE_PWD"}
+              { "id": "anypoint-exchange-v2", "username": "~~~Token~~~", "password": "${env.ACCESS_TOKEN}"},
+              { "id": "mule-ee-nexus-releases", "username": "${env.NEXUS_EE_USERNAME}", "password": "${env.NEXUS_EE_PWD}"}
             ]
       
-      - name: Verify Maven
+      - name: Validate project
         run: |
           source ~/.bashrc
-          mvn verify
+          mvn -B -P $MAVEN_PROFILES compile
 
       - name: Run Deploy
         if: ${{ success() }} 
@@ -92,16 +105,17 @@ jobs:
           ANYPOINT_ENV_CLIENT_SECRET_SECRETNAME: '${{ steps.branch_name_uppercase.outputs.uppercase }}__ANYPOINT_ENV_CLIENT_SECRET'
         run: |
           source ~/.bashrc
-          mvn deploy -DmuleDeploy \
-            -Dmule.env=$ENV \
-            -Dmule.secure.key=${{secrets[env.MULE_VAULT_KEY_SECRETNAME]}} \
-            -Danypoint.base_uri=$ANYPOINT_HOST \
-            -Danypoint.analytics_base_uri=$ANYPOINT_ANALYTICS_HOST \
-            -Danypoint.environment=$ANYPOINT_ENV \
-            -Danypoint.businessgroup=$ANYPOINT_BUSINESS_GROUP \
-            -Danypoint.workers=$ANYPOINT_WORKERS \
-            -Danypoint.workertype=$ANYPOINT_WORKER_TYPE \
-            -Danypoint.region=$ANYPOINT_REGION \
-            -DauthToken=$ACCESS_TOKEN \
-            -Dplatform.client_id=${{secrets[env.ANYPOINT_ENV_CLIENT_ID_SECRETNAME]}} \
-            -Dplatform.client_secret=${{secrets[env.ANYPOINT_ENV_CLIENT_SECRET_SECRETNAME]}}
+          mvn -B -P $MAVEN_PROFILES deploy \
+            -DmuleDeploy \
+            -Dmule.env="$ENV" \
+            -Dmule.secure.key="${{secrets[env.MULE_VAULT_KEY_SECRETNAME]}}" \
+            -Danypoint.base_uri="$ANYPOINT_HOST" \
+            -Danypoint.analytics_base_uri="$ANYPOINT_ANALYTICS_HOST" \
+            -Danypoint.environment="$ANYPOINT_ENV" \
+            -Danypoint.businessgroup="$ANYPOINT_BUSINESS_GROUP" \
+            -Danypoint.workers="$ANYPOINT_WORKERS" \
+            -Danypoint.workertype="$ANYPOINT_WORKER_TYPE" \
+            -Danypoint.region="$ANYPOINT_REGION" \
+            -DauthToken="$ACCESS_TOKEN" \
+            -Dplatform.client_id="${{secrets[env.ANYPOINT_ENV_CLIENT_ID_SECRETNAME]}}" \
+            -Dplatform.client_secret="${{secrets[env.ANYPOINT_ENV_CLIENT_SECRET_SECRETNAME]}}"
