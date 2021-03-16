@@ -77,7 +77,7 @@
 						<uri>${anypoint.base_uri}</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<authToken>${authToken}</authToken>
-						<applicationName>${project.artifactId}-${project.name.suffix}</applicationName>
+						<applicationName>horus-${project.artifactId}-${project.name.suffix}</applicationName>
 						<businessGroup>${anypoint.businessgroup}</businessGroup>
 						<workers>${anypoint.workers}</workers>
 						<workerType>${anypoint.workertype}</workerType>
