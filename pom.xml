@@ -17,7 +17,7 @@
 		<mule.env>LOCAL</mule.env>
 		<project.name.suffix>${project.name.version}-${mule.env.lower}</project.name.suffix>
 		<app.runtime>4.3.0</app.runtime>
-		<mule.maven.plugin.version>3.5.1</mule.maven.plugin.version>
+		<mule.maven.plugin.version>3.4.2</mule.maven.plugin.version>
 		<munit.version>2.1.5</munit.version>
 	</properties>
 
@@ -115,8 +115,8 @@
 							<replacement>${mule.env}</replacement>
 							<toLowerCase>true</toLowerCase>
 							<failIfNoMatch>false</failIfNoMatch>
-							<fileSet />
-							<source />
+							<fileSet/>
+							<source/>
 						</configuration>
 					</execution>
 				</executions>
