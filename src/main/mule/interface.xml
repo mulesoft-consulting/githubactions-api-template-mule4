@@ -10,13 +10,6 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
     </http:listener-config>
     <flow name="flow-init" doc:id="ec782a22-eff5-4e7d-ba82-b9cbd724627f">
         <http:listener doc:name="Listener" doc:id="1db00d4f-7eed-49ab-8547-de95853ab53a" config-ref="APIKit" path="/not_used" />
-		<json-logger:logger doc:name="Logger" doc:id="05ae8979-4104-44da-8cce-29f6addf428d" config-ref="JSON_Logger_Config" message="init" priority="DEBUG">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
-{
-    payload: payload,
-    attributes: attributes
-}]]]></json-logger:content>
-		</json-logger:logger>
 		<flow-ref doc:name="init_variables" doc:id="1f397cf5-bdc1-4f2b-ab2e-4a9bba88d9b3" name="init_variables" />
         <apikit:router config-ref="APIkit-Router" />
     </flow>
