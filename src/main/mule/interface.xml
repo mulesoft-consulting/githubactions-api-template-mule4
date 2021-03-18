@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
     <apikit:config name="APIkit-Router" api="" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <http:listener-config name="APIKit" doc:name="HTTP Listener config" doc:id="ba09f4b1-fa7b-444e-ab11-476f0119cf9e">
         <http:listener-connection host="0.0.0.0" port="1111" />
@@ -9,34 +10,11 @@
     </http:listener-config>
     <flow name="flow-init" doc:id="ec782a22-eff5-4e7d-ba82-b9cbd724627f">
         <http:listener doc:name="Listener" doc:id="1db00d4f-7eed-49ab-8547-de95853ab53a" config-ref="APIKit" path="/not_used" />
-		<async doc:name="Async" doc:id="bff0ec66-7c60-4383-b9e5-54da7bccf55e">
-			<ee:transform doc:name="LOG  VARS" doc:id="1ba71498-b01c-4a37-997a-f36a5f0aade3">
-                <ee:message />
-                <ee:variables>
-                    <ee:set-variable variableName="LOG_MESSAGE"><![CDATA[%dw 2.0
-output application/json
----
-{
-	flowName: "flow-init",
-	correlationId: correlationId,
-	category: "REGULAR", //REGULAR SECURITY SYSTEM METRIC
-	key: "input",
-	value: {
-		payload: payload,
-		attributes: attributes
-	}
-}]]></ee:set-variable>
-                    <ee:set-variable variableName="LOG_LEVEL"><![CDATA[//DEBUG ERROR INFO TRACE WARN
-"DEBUG"]]></ee:set-variable>
-                </ee:variables>
-            </ee:transform>
-			<flow-ref doc:name="AUDIT LOG" doc:id="1ae9d73f-2126-437a-82ae-3c0569204b15" name="log_management" target="LOGSINK" />
-        </async>
 		<flow-ref doc:name="init_variables" doc:id="1f397cf5-bdc1-4f2b-ab2e-4a9bba88d9b3" name="init_variables" />
         <apikit:router config-ref="APIkit-Router" />
     </flow>
     <flow name="flow-main">
-        <http:listener config-ref="httpListenerConfig" path="/${app.name}/${api_version}/*">
+        <http:listener config-ref="httpListenerConfig" path="/s-api-salesforce/${api_version}/*">
             <non-repeatable-stream />
 			<http:response statusCode="#[vars.httpStatus default 200]">
                 <http:body><![CDATA[#[%dw 2.0

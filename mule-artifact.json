@@ -2,7 +2,7 @@
 	"secureProperties": [
 		"anypoint.platform.client_id",
 		"anypoint.platform.client_secret",
-		"mule.vault.key"
+		"mule.secure.key"
 	],
 	"minMuleVersion": "4.3.0"
 }

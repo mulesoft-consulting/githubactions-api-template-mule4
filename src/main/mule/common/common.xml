@@ -89,26 +89,4 @@ output application/json
 	responseTime: ( currentMilliseconds() as Number ) - ( vars.flow_start_ts as Number )
 }]'/>
 	</flow>
-	<flow name="log_management" doc:id="8662644a-e9ca-4bcc-98b2-4a9fe5242bf4" >
-		<choice doc:name="Choice" doc:id="76bef820-7a39-449a-94f1-26cbfb9c6c5d" >
-			<when expression='#[vars.LOG_LEVEL == "DEBUG"]'>
-				<logger level="DEBUG" doc:name="DEBUG" doc:id="2a0a6c29-464c-4e14-9a8b-7a135c1664bb" message="#[vars.LOG_MESSAGE]" category="com.smcp.logging"/>
-			</when>
-			<when expression='#[vars.LOG_LEVEL == "INFO"]'>
-				<logger level="INFO" doc:name="INFO" doc:id="5657ad01-59fa-495a-aa5b-68262d3ee328" message="#[vars.LOG_MESSAGE]"/>
-			</when>
-			<when expression='#[vars.LOG_LEVEL == "WARN"]'>
-				<logger level="WARN" doc:name="WARN" doc:id="2799a34c-f91d-47bf-ab6a-b7936990935e" message="#[vars.LOG_MESSAGE]"/>
-			</when>
-			<when expression='#[vars.LOG_LEVEL == "ERROR"]'>
-				<logger level="ERROR" doc:name="ERROR" doc:id="170e90b1-b942-4bd0-afec-552235eeb6e5" message="#[vars.LOG_MESSAGE]"/>
-			</when>
-			<when expression='#[vars.LOG_LEVEL == "TRACE"]'>
-				<logger level="TRACE" doc:name="TRACE" doc:id="d1b6b6b9-b5fe-4214-8af4-b7282677f928" message="#[vars.LOG_MESSAGE]"/>
-			</when>
-			<otherwise >
-				<logger level="WARN" doc:name="WARN" doc:id="e310b1d2-0e9c-4298-a0b7-bbf59dc6a6e1" message="#[vars.LOG_MESSAGE]" />
-			</otherwise>
-		</choice>
-	</flow>
 </mule>

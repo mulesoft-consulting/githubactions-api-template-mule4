@@ -13,11 +13,28 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<app.runtime>4.3.0-20210119</app.runtime>
+		<project.name.version>v1</project.name.version>
+		<mule.env>LOCAL</mule.env>
+		<project.name.suffix>${project.name.version}-${mule.env.lower}</project.name.suffix>
+		<app.runtime>4.3.0</app.runtime>
 		<mule.maven.plugin.version>3.4.2</mule.maven.plugin.version>
 		<munit.version>2.1.5</munit.version>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>build_non_prod</id>
+			<properties>
+				<project.name.suffix>${project.name.version}-${mule.env.lower}</project.name.suffix>
+			</properties>
+		</profile>
+		<profile>
+			<id>build_prod</id>
+			<properties>
+				<project.name.suffix>${project.name.version}</project.name.suffix>
+			</properties>
+		</profile>
+	</profiles>
 
 	<scm>
 		<developerConnection>scm:git:{{REPO_URL}}</developerConnection>
@@ -60,7 +77,7 @@
 						<uri>${anypoint.base_uri}</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<authToken>${authToken}</authToken>
-						<applicationName>${project.artifactId}-v1-${anypoint.environment}</applicationName>
+						<applicationName>horus-${project.artifactId}-${project.name.suffix}</applicationName>
 						<businessGroup>${anypoint.businessgroup}</businessGroup>
 						<workers>${anypoint.workers}</workers>
 						<workerType>${anypoint.workertype}</workerType>
@@ -71,13 +88,38 @@
 							<mule.env>${mule.env}</mule.env>
 							<anypoint.platform.client_id>${platform.client_id}</anypoint.platform.client_id>
 							<anypoint.platform.client_secret>${platform.client_secret}</anypoint.platform.client_secret>
-							<mule.vault.key>${mule.vault.key}</mule.vault.key>
+							<mule.secure.key>${mule.secure.key}</mule.secure.key>
 							<anypoint.platform.base_uri>${anypoint.base_uri}</anypoint.platform.base_uri>
 							<anypoint.platform.analytics_base_uri>${anypoint.analytics_base_uri}</anypoint.platform.analytics_base_uri>
 						</properties>
 					</cloudHubDeployment>
 					<classifier>mule-application</classifier>
 				</configuration>
+			</plugin>
+			<plugin>
+				<!-- Helper to perform small tasks like uppercase and lower etc ...-->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>mule.env-lowercase-variable</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>mule.env.lower</name>
+							<value>${mule.env}</value>
+							<regex>${mule.env}</regex>
+							<replacement>${mule.env}</replacement>
+							<toLowerCase>true</toLowerCase>
+							<failIfNoMatch>false</failIfNoMatch>
+							<fileSet/>
+							<source/>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.mulesoft.munit.tools</groupId>
@@ -176,9 +218,21 @@
 			<classifier>mule-plugin</classifier>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>{{GROUP_ID}}</groupId>
+			<artifactId>json-logger</artifactId>
+			<version>2.0.1</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
 	</dependencies>
 	<!-- Mule Main repository -->
 	<repositories>
+		<repository>
+			<id>anypoint-exchange-v2</id>
+			<name>Anypoint Exchange</name>
+			<url>https://maven.{{ANYPOINT_HOST}}/api/v2/organizations/${project.groupId}/maven</url>
+			<layout>default</layout>
+		</repository>
 		<repository>
 			<id>anypoint-exchange</id>
 			<name>Anypoint Exchange</name>
@@ -191,7 +245,17 @@
 			<url>https://repository.mulesoft.org/releases/</url>
 			<layout>default</layout>
 		</repository>
-		<!-- Maven2 repo -->
+		<repository>
+			<id>mule-ee-nexus-releases</id>
+			<name>Mule EE Repository</name>
+			<url>https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>maven2</id>
 			<url>http://repo1.maven.org/maven2</url>
@@ -212,7 +276,7 @@
 		<repository>
 			<id>Repository</id>
 			<name>Corporate Repository</name>
-			<url>https://maven.anypoint.mulesoft.com/api/v1/organizations/${project.groupId}/maven</url>
+			<url>https://maven.{{ANYPOINT_HOST}}/api/v2/organizations/${project.groupId}/maven</url>
 			<layout>default</layout>
 		</repository>
 	</distributionManagement>
