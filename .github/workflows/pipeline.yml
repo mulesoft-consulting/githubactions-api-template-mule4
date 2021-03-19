@@ -64,7 +64,7 @@ jobs:
         name: Environment DEV configuration
         run: |
           echo 'export ENV="DEV"' > ~/.bashrc
-          echo 'export ANYPOINT_ENV="Development"' > ~/.bashrc
+          echo 'export ANYPOINT_ENV="Development"' >> ~/.bashrc
           echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
       
       # QA branch specific configuration 
@@ -72,13 +72,13 @@ jobs:
         name: Environment QA configuration
         run: |
           echo 'export ENV="QA"' > ~/.bashrc
-          echo 'export ANYPOINT_ENV="Quality"' > ~/.bashrc
+          echo 'export ANYPOINT_ENV="Quality"' >> ~/.bashrc
           echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
         
       - name: Get Anypoint Access Token
         run: |
           export TOKEN=`curl -s "$ANYPOINT_HOST/accounts/api/v2/oauth2/token" -X POST -H 'Content-Type: application/json' -d "{\"grant_type\": \"client_credentials\", \"client_id\": \"$ANYPOINT_APP_CLIENT_ID\", \"client_secret\": \"$ANYPOINT_APP_CLIENT_SECRET\"}"|sed -n 's|.*"access_token":"\([^\"]*\)".*|\1|p'|xargs`
-          echo "export ACCESS_TOKEN=$TOKEN" > ~/.bashrc
+          echo "export ACCESS_TOKEN=$TOKEN" >> ~/.bashrc
 
       - name: Preparing Maven Settings
         uses: whelk-io/maven-settings-xml-action@v14

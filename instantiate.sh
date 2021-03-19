@@ -197,10 +197,10 @@ echo "* Using host: $ANYPOINT_HOST"
 echo -n "* Updating host in pom and pipeline files... "
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" pom.xml
-    sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflow/pipeline.yml
+    sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflows/pipeline.yml
 else 
     sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" pom.xml
-    sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflow/pipeline.yml
+    sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflows/pipeline.yml
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
@@ -208,9 +208,9 @@ echo;echo "############### ANYPOINT REGION UPDATE"
 echo "* Using region: $REGION"
 echo -n "* Updating region in pipeline file... "
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s/{{REGION}}/$REGION/g" .github/workflow/pipeline.yml
+    sed -i '' "s/{{REGION}}/$REGION/g" .github/workflows/pipeline.yml
 else
-    sed -i "s/{{REGION}}/$REGION/g" .github/workflow/pipeline.yml
+    sed -i "s/{{REGION}}/$REGION/g" .github/workflows/pipeline.yml
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
@@ -233,9 +233,9 @@ if [ -z "$GROUP_NAME" ]; then
 else
     echo -n "* Updating Group Name... "
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflow/pipeline.yml
+        sed -i '' "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflows/pipeline.yml
     else
-        sed -i "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflow/pipeline.yml
+        sed -i "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflows/pipeline.yml
     fi
     printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 fi

@@ -1,5 +1,6 @@
 http:
   port: "8081"
+  private: "8091"
   
 https:
   port: "8082"
@@ -7,5 +8,5 @@ https:
     port: "8092"
   
 logger:
-  fields_mask: "client_id"
+  masked_fields: "client_id,client_secret,password"
   disabled_fields: ""
