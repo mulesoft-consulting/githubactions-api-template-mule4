@@ -103,6 +103,8 @@ Therefore, for a given branch name, the following parameters should be specified
 - **ENV** is the execution environemnt
 - **ANYPOINT_ENV** is cloudhub's environment name 
 
+The pipeline generates a new certificate before validating the project and deploying. The certificate is a P12 and has the app name used to initialize the project as a prefix. The certificate is created by default in the `certificates/` folder located in `resources/`.
+
 The pipeline uses secrets that are detailed in the next section.
 
 ### Setup Secrets
