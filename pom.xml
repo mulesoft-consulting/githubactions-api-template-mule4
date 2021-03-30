@@ -15,7 +15,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.name.version>v1</project.name.version>
 		<mule.env>LOCAL</mule.env>
-		<project.name.suffix>${project.name.version}-${mule.env.lower}</project.name.suffix>
+		<project.name.suffix>${mule.env.lower}-horus</project.name.suffix>
 		<app.runtime>4.3.0</app.runtime>
 		<mule.maven.plugin.version>3.4.2</mule.maven.plugin.version>
 		<munit.version>2.1.5</munit.version>
@@ -25,13 +25,13 @@
 		<profile>
 			<id>build_non_prod</id>
 			<properties>
-				<project.name.suffix>${project.name.version}-${mule.env.lower}</project.name.suffix>
+				<project.name.suffix>${mule.env.lower}-horus</project.name.suffix>
 			</properties>
 		</profile>
 		<profile>
 			<id>build_prod</id>
 			<properties>
-				<project.name.suffix>${project.name.version}</project.name.suffix>
+				<project.name.suffix>horus</project.name.suffix>
 			</properties>
 		</profile>
 	</profiles>
@@ -77,7 +77,7 @@
 						<uri>${anypoint.base_uri}</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<authToken>${authToken}</authToken>
-						<applicationName>horus-${project.artifactId}-${project.name.suffix}</applicationName>
+						<applicationName>${project.artifactId}-${project.name.suffix}</applicationName>
 						<businessGroup>${anypoint.businessgroup}</businessGroup>
 						<workers>${anypoint.workers}</workers>
 						<workerType>${anypoint.workertype}</workerType>

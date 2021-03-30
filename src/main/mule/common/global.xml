@@ -11,6 +11,6 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<configuration doc:name="Configuration" doc:id="f382e0ba-ce29-4871-95e9-d5a4f25e9f7a" defaultErrorHandler-ref="Global_Error_Handler" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="776a2f1e-f34e-432a-90c9-6859987e90bf" file="${mule.env}/properties/properties-secure.yaml" key="${mule.secure.key}" />
 	<global-property doc:name="Global Property" doc:id="f0f5199e-623f-4fc2-be65-4e314aebcbc4" name="mule.secure.key" value="0123456789012345" />
-	<global-property doc:name="Global Property" doc:id="7d3ca192-e9c4-45e5-97de-b8ac2148a3c3" name="api_version" value="1.0" />
+	<global-property doc:name="Global Property" doc:id="7d3ca192-e9c4-45e5-97de-b8ac2148a3c3" name="api_version" value="v1.0" />
 	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="b82edcbe-6a79-4e1b-a370-621a1cad6031" environment="${mule.env}" disabledFields="${logger.disabled_fields}" contentFieldsDataMasking="${logger.masked_fields}" applicationName="${app.name}" applicationVersion="${api_version}"/>
 </mule>
