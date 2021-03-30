@@ -88,6 +88,30 @@ jobs:
               { "id": "anypoint-exchange-v2", "username": "~~~Token~~~", "password": "${env.ACCESS_TOKEN}"},
               { "id": "mule-ee-nexus-releases", "username": "${env.NEXUS_EE_USERNAME}", "password": "${env.NEXUS_EE_PWD}"}
             ]
+
+      - name: Generating Certificates
+        env:
+          MULE_VAULT_KEY_SECRETNAME: '${{ steps.branch_name_uppercase.outputs.uppercase }}__MULE_VAULT_KEY'
+        run: |
+          PROJECT_NAME="template-api"
+          PASS="${{secrets[env.MULE_VAULT_KEY_SECRETNAME]}}"
+          APP="$PROJECT_NAME-cert"
+          HOST="localhost"
+          ALTNAMES="DNS:$HOST,IP:127.0.0.1"
+          KEYSTORE="./src/main/resources/certificates/$APP.p12"
+          DNAME="cn=$HOST, ou=Proxy, o=MuleSoft, c=EU"
+          ALIAS="server"
+          VALIDITY="3000"
+          rm -f $KEYSTORE
+          keytool -v -genkeypair \
+            -keyalg RSA \
+            -dname "$DNAME" \
+            -ext SAN="$ALTNAMES" \
+            -validity $VALIDITY \
+            -alias "$ALIAS" \
+            -keystore "$KEYSTORE" \
+            -storetype pkcs12 \
+            -storepass "$PASS"
       
       - name: Validate project
         run: |

@@ -87,6 +87,9 @@ SCRIPT_NAME=$(basename "$0")
 OLD_ROOT=$(basename "$PWD")
 TEMPLATE_FLAG="template-api" 
 
+#Pipeline PATH
+PIPELINE_PATH=".github/workflows/pipeline.yml"
+
 #---------- PARAMETERS ---------------------------------------------------
 
 if [ "$#" -lt 1 ]; then
@@ -172,6 +175,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     find pom.xml -type f -print0 | LC_CTYPE=C xargs -0 sed -i '' s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
     find README.md -type f -print0 | LC_CTYPE=C xargs -0 sed -i '' s/"$OLD_ROOT"/"$NEW_ROOT"/g
     find README.md -type f -print0 | LC_CTYPE=C xargs -0 sed -i '' s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
+    find $PIPELINE_PATH -type f -print0 | LC_CTYPE=C xargs -0 sed -i '' s/"$OLD_ROOT"/"$NEW_ROOT"/g
+    find $PIPELINE_PATH -type f -print0 | LC_CTYPE=C xargs -0 sed -i '' s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
 else
     find ./src -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$OLD_ROOT"/"$NEW_ROOT"/g
     find ./src -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
@@ -179,6 +184,8 @@ else
     find pom.xml -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
     find README.md -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$OLD_ROOT"/"$NEW_ROOT"/g
     find README.md -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
+    find $PIPELINE_PATH -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$OLD_ROOT"/"$NEW_ROOT"/g
+    find $PIPELINE_PATH -type f -print0 | LC_CTYPE=C xargs -0 sed -i s/"$TEMPLATE_FLAG"/"$NEW_ROOT"/g
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
@@ -197,10 +204,10 @@ echo "* Using host: $ANYPOINT_HOST"
 echo -n "* Updating host in pom and pipeline files... "
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" pom.xml
-    sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflows/pipeline.yml
+    sed -i '' "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" $PIPELINE_PATH
 else 
     sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" pom.xml
-    sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" .github/workflows/pipeline.yml
+    sed -i "s/{{ANYPOINT_HOST}}/$ANYPOINT_HOST/g" $PIPELINE_PATH
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
@@ -208,9 +215,9 @@ echo;echo "############### ANYPOINT REGION UPDATE"
 echo "* Using region: $REGION"
 echo -n "* Updating region in pipeline file... "
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s/{{REGION}}/$REGION/g" .github/workflows/pipeline.yml
+    sed -i '' "s/{{REGION}}/$REGION/g" $PIPELINE_PATH
 else
-    sed -i "s/{{REGION}}/$REGION/g" .github/workflows/pipeline.yml
+    sed -i "s/{{REGION}}/$REGION/g" $PIPELINE_PATH
 fi
 printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 
@@ -233,9 +240,9 @@ if [ -z "$GROUP_NAME" ]; then
 else
     echo -n "* Updating Group Name... "
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflows/pipeline.yml
+        sed -i '' "s/{{GROUP_NAME}}/$GROUP_NAME/g" $PIPELINE_PATH
     else
-        sed -i "s/{{GROUP_NAME}}/$GROUP_NAME/g" .github/workflows/pipeline.yml
+        sed -i "s/{{GROUP_NAME}}/$GROUP_NAME/g" $PIPELINE_PATH
     fi
     printf '%s%s%s\n' $COLOR_GREEN 'done' $COLOR_REST
 fi
