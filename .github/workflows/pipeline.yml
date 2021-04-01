@@ -102,7 +102,7 @@ jobs:
           DNAME="cn=$HOST, ou=Proxy, o=MuleSoft, c=EU"
           ALIAS="server"
           VALIDITY="3000"
-          rm -f $KEYSTORE
+          rm -f $KEYSTORE || true
           keytool -v -genkeypair \
             -keyalg RSA \
             -dname "$DNAME" \
