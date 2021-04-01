@@ -98,10 +98,12 @@ jobs:
           APP="$PROJECT_NAME-cert"
           HOST="localhost"
           ALTNAMES="DNS:$HOST,IP:127.0.0.1"
-          KEYSTORE="./src/main/resources/certificates/$APP.p12"
+          KEYSTORE_FOLDER="./src/main/resources/certificates"
+          KEYSTORE="$KEYSTORE_FOLDER/$APP.p12"
           DNAME="cn=$HOST, ou=Proxy, o=MuleSoft, c=EU"
           ALIAS="server"
           VALIDITY="3000"
+          mkdir -p $KEYSTORE_FOLDER
           rm -f $KEYSTORE
           keytool -v -genkeypair \
             -keyalg RSA \
