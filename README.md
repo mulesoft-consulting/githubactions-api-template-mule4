@@ -91,6 +91,7 @@ Some environment specific variables should be set if you are planning to use oth
   run: |
     echo 'export ENV="DEV"' > ~/.bashrc
     echo 'export ANYPOINT_ENV="Development"' > ~/.bashrc
+    echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
 
 # QA branch specific configuration 
 - if: github.ref == 'refs/heads/qa'
@@ -98,10 +99,22 @@ Some environment specific variables should be set if you are planning to use oth
   run: |
     echo 'export ENV="QA"' > ~/.bashrc
     echo 'export ANYPOINT_ENV="Quality"' > ~/.bashrc
+    echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
+
+# PROD specific configuration (can only be executed with a tag)
+- if: startsWith(github.ref, 'refs/tags/v')
+  name: Environment PROD configuration
+  run: |
+    echo 'export ENV="PROD"' >> ~/.bashrc
+    echo 'export ANYPOINT_ENV="Production"' >> ~/.bashrc
+    echo 'export MAVEN_PROFILES="build_prod"' >> ~/.bashrc
 ```
 Therefore, for a given branch name, the following parameters should be specified
 - **ENV** is the execution environemnt
 - **ANYPOINT_ENV** is cloudhub's environment name 
+- **MAVEN_PROFILES** the maven profile that shall be used to build the project (checkout the pom.xml)
+
+**N.B**: On production, the pipeline can only be triggered with a tag and the tag name has to start with `v`, example: `v1.0.0`
 
 The pipeline generates a new certificate before validating the project and deploying. The certificate is a P12 and has the app name used to initialize the project as a prefix. The certificate is created by default in the `certificates/` folder located in `resources/`.
 
@@ -124,6 +137,53 @@ The following is a list of secrets mandatory to make the pipeline work:
 |`[ENV_NAME]__MULE_VAULT_KEY`             |**required** The mule application's vault key to decrypt mule's secured properties| 0123456701234567|
 |`NEXUS_EE_PWD`                           |**required** The nexus entreprise repository password               |  azertat   |
 |`NEXUS_EE_USERNAME`                      |**required** The nexus entreprise repository username               | mule-nexus-user |
+
+
+## Logging
+
+The application is using the `json-logger` package for logging. It provides a logging structure fulfilling all basic requirements. Following is the anatomy of a log:
+
+```json
+{
+  "correlationId" : "a5E0E000000Kn6CUAS2021042717273929",
+  "message" : "POST WORK UNIT",
+  "tracePoint" : "START",
+  "priority" : "INFO",
+  "elapsed" : 4192,
+  "locationInfo" : {
+    "lineInFile" : "125",
+    "component" : "json-logger:logger",
+    "fileName" : "implementation/post-work_unit.xml",
+    "rootContainer" : "post:\\work_unit:imp"
+  },
+  "timestamp" : "2021-04-27T15:27:43.510Z",
+  "content" : {
+    "key": "value"
+  },
+  "applicationName" : "s-api-sap-dev-horus",
+  "applicationVersion" : "v1.0",
+  "environment" : "DEV",
+  "threadName" : "[MuleRuntime].uber.5593: [s-api-sap-dev-horus].post:\\work_unit:imp.BLOCKING @68f64e2a"
+}
+```
+
+| parameters        | description    |
+|-------------------|----------------|
+| correlationId     | The request correlation ID |
+| message           | A basic phrase describing what is the logging about |
+| tracePoint        | the check point throughout the flow execution |
+| priority          | the log level |
+| elapsed           | time elapsed between check points (between START and END for example) |
+| locationInfo      | logging location in source code |
+| timestamp         | when logging was executed       |
+| content           | the logging content or payload  |
+| applicationName   | the application's name          |
+| applicationVersion | the application's version      |
+| environment       | application's execution environment |
+| threadName        | the thread name executing the logging task |
+
+
+**N.B** It is possible to update the logging level whilst the app is running on cloudhub. In fact, you can navigate to your application on Runtime Manager, then go to `settings > Logging` then you can apply the debug level you desire using `org.mule.extension.jsonlogger.JsonLogger` package name.
 
 
 ## RELEASE

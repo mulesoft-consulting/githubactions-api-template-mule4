@@ -6,7 +6,7 @@ name: Mule Pipeline
 on:
   # Triggers the workflow on push
   push:
-    branches: [ dev ]
+    branches: [ dev, qa ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -75,6 +75,14 @@ jobs:
           echo 'export ANYPOINT_ENV="Quality"' >> ~/.bashrc
           echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
         
+      # PROD specific configuration (can only be executed with a tag)
+      - if: startsWith(github.ref, 'refs/tags/v')
+        name: Environment PROD configuration
+        run: |
+          echo 'export ENV="PROD"' >> ~/.bashrc
+          echo 'export ANYPOINT_ENV="Production"' >> ~/.bashrc
+          echo 'export MAVEN_PROFILES="build_prod"' >> ~/.bashrc
+
       - name: Get Anypoint Access Token
         run: |
           export TOKEN=`curl -s "$ANYPOINT_HOST/accounts/api/v2/oauth2/token" -X POST -H 'Content-Type: application/json' -d "{\"grant_type\": \"client_credentials\", \"client_id\": \"$ANYPOINT_APP_CLIENT_ID\", \"client_secret\": \"$ANYPOINT_APP_CLIENT_SECRET\"}"|sed -n 's|.*"access_token":"\([^\"]*\)".*|\1|p'|xargs`
@@ -115,10 +123,13 @@ jobs:
             -storetype pkcs12 \
             -storepass "$PASS"
       
-      - name: Validate project
+      - name: Validate Project
         run: |
           source ~/.bashrc
-          mvn -B -P $MAVEN_PROFILES compile
+          if [ -z "$MAVEN_PROFILES" ];
+            then echo "No Configuration Found." && exit 1;
+          else mvn -B -P $MAVEN_PROFILES compile;
+          fi;
 
       - name: Run Deploy
         if: ${{ success() }} 
