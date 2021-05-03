@@ -9,6 +9,10 @@ on:
     branches: [ dev, qa ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: "the version to deploy on production"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,7 +36,15 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Clone Repository (Latest)
+        uses: actions/checkout@v2
+        if: github.event.inputs.version == ''
+
+      - name: Clone Repository - Version ${{ github.event.inputs.version }}
+        uses: actions/checkout@v2
+        if: github.event.inputs.version != ''
+        with:
+          ref: ${{ github.event.inputs.version }}
       
       - name: Set Up JDK 1.8
         uses: actions/setup-java@v1
@@ -46,21 +58,25 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       
-      - id: branch_name
-        name: Extract Branch Name
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - name: Extract Branch Name
+        if: github.event.inputs.version == ''
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
 
-      - id: branch_name_uppercase
+      - name: User production Branch naming
+        if: github.event.inputs.version != ''
+        run: echo "BRANCH_NAME=$(echo prod)" >> $GITHUB_ENV
+
+      - id: env_uppercase
         uses: ASzc/change-string-case-action@v1
         with:
-          string: ${{ steps.branch_name.outputs.branch }}
+          string: ${{ env.BRANCH_NAME }}
 
       - name: Initialize bashrc file 
         run: |
           > ~/.bashrc
 
       # DEV branch specific configuration
-      - if: github.ref == 'refs/heads/dev'
+      - if: env.BRANCH_NAME == 'dev'
         name: Environment DEV configuration
         run: |
           echo 'export ENV="DEV"' > ~/.bashrc
@@ -68,7 +84,7 @@ jobs:
           echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
       
       # QA branch specific configuration 
-      - if: github.ref == 'refs/heads/qa'
+      - if: env.BRANCH_NAME == 'qa'
         name: Environment QA configuration
         run: |
           echo 'export ENV="QA"' > ~/.bashrc
@@ -76,7 +92,7 @@ jobs:
           echo 'export MAVEN_PROFILES="build_non_prod"' >> ~/.bashrc
         
       # PROD specific configuration (can only be executed with a tag)
-      - if: startsWith(github.ref, 'refs/tags/v')
+      - if: env.BRANCH_NAME == 'prod'
         name: Environment PROD configuration
         run: |
           echo 'export ENV="PROD"' >> ~/.bashrc
@@ -99,7 +115,7 @@ jobs:
 
       - name: Generating Certificates
         env:
-          MULE_VAULT_KEY_SECRETNAME: '${{ steps.branch_name_uppercase.outputs.uppercase }}__MULE_VAULT_KEY'
+          MULE_VAULT_KEY_SECRETNAME: '${{ steps.env_uppercase.outputs.uppercase }}__MULE_VAULT_KEY'
         run: |
           PROJECT_NAME="template-api"
           PASS="${{secrets[env.MULE_VAULT_KEY_SECRETNAME]}}"
@@ -136,9 +152,9 @@ jobs:
         # Step specific environment variables
         # These variables represent the secret names generated from branch name
         env:
-          MULE_VAULT_KEY_SECRETNAME: '${{ steps.branch_name_uppercase.outputs.uppercase }}__MULE_VAULT_KEY'
-          ANYPOINT_ENV_CLIENT_ID_SECRETNAME: '${{ steps.branch_name_uppercase.outputs.uppercase }}__ANYPOINT_ENV_CLIENT_ID'
-          ANYPOINT_ENV_CLIENT_SECRET_SECRETNAME: '${{ steps.branch_name_uppercase.outputs.uppercase }}__ANYPOINT_ENV_CLIENT_SECRET'
+          MULE_VAULT_KEY_SECRETNAME: '${{ steps.env_uppercase.outputs.uppercase }}__MULE_VAULT_KEY'
+          ANYPOINT_ENV_CLIENT_ID_SECRETNAME: '${{ steps.env_uppercase.outputs.uppercase }}__ANYPOINT_ENV_CLIENT_ID'
+          ANYPOINT_ENV_CLIENT_SECRET_SECRETNAME: '${{ steps.env_uppercase.outputs.uppercase }}__ANYPOINT_ENV_CLIENT_SECRET'
         run: |
           source ~/.bashrc
           mvn -B -P $MAVEN_PROFILES deploy \
